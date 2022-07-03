@@ -20,6 +20,7 @@ if (isset($_POST['submit'])) {
       $_SESSION['login'] = true;
       $_SESSION['nama'] = $row['nm_user'];
       $_SESSION['level'] = $row['level'];
+      $_SESSION['id_user'] = $row['id_user'];
       if ($row['level'] == 1) {
         header("Location: sadmin/index.php");
         exit;

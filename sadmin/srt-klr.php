@@ -3,7 +3,7 @@ session_start();
 
 include '../koneksi.php';
 
-$query_srt = 'SELECT * FROM tbl_srt_msk m INNER JOIN tbl_bagian b ON m.id_bagian = b.id_bagian INNER JOIN tbl_user u ON u.id_user = m.id_user';
+$query_srt = 'SELECT * FROM tbl_srt_klr k INNER JOIN tbl_bagian b ON k.id_bagian = b.id_bagian INNER JOIN tbl_user u ON u.id_user = k.ttd';
 $result_srt = mysqli_query($conn, $query_srt);
 ?>
 
@@ -32,7 +32,7 @@ $result_srt = mysqli_query($conn, $query_srt);
   <link rel="stylesheet" href="../assets/css/dark-theme.css" />
   <link rel="stylesheet" href="../assets/css/semi-dark.css" />
   <link rel="stylesheet" href="../assets/css/header-colors.css" />
-  <title>Simawar - Data Surat Masuk</title>
+  <title>Simawar - Data Surat Keluar</title>
 </head>
 
 <body>
@@ -52,15 +52,15 @@ $result_srt = mysqli_query($conn, $query_srt);
             <nav aria-label="breadcrumb">
               <ol class="breadcrumb mb-0 p-0">
                 <li class="breadcrumb-item"><a href="index.php"><i class="bx bx-home-alt"></i></a></li>
-                <li class="breadcrumb-item active" aria-current="page">Data Surat Masuk</li>
+                <li class="breadcrumb-item active" aria-current="page">Data Surat Keluar</li>
               </ol>
             </nav>
           </div>
         </div>
         <!--end breadcrumb-->
-        <h5 class="my-4 text-uppercase">Data Surat Masuk</h5>
+        <h5 class="my-4 text-uppercase">Data Surat Keluar</h5>
         <div class="col">
-          <a href="srt-msk-tambah.php" class="btn btn-primary"><i class='bx bx-plus mr-1'></i>Tambah Data</a>
+          <a href="srt-klr-tambah.php" class="btn btn-primary"><i class='bx bx-plus mr-1'></i>Tambah Data</a>
         </div>
         <hr />
         <div class="card">
@@ -70,14 +70,16 @@ $result_srt = mysqli_query($conn, $query_srt);
                 <thead class="table-primary">
                   <tr>
                     <th>Action</th>
+                    <th>Status</th>
                     <th>Nomor</th>
                     <th>Tanggal</th>
                     <th>Lampiran</th>
                     <th>Hal</th>
-                    <th>Dari</th>
+                    <th>Untuk</th>
                     <th>Untuk Bagian</th>
+                    <th>Penandatangan</th>
+                    <th>Tgl Ttd</th>
                     <th>Tgl Input</th>
-                    <th>Oleh</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -86,19 +88,35 @@ $result_srt = mysqli_query($conn, $query_srt);
                   ?>
                     <tr>
                       <td>
-                        <div class="d-flex order-actions">
-                          <a href="srt-msk-edit.php?id=<?= $row_srt['id_srt_msk']; ?>" class="text-light bg-success border-0"><i class='bx bxs-edit'></i></a>
-                          <a href="srt-msk-hapus.php?id=<?= $row_srt['id_srt_msk']; ?>" class="ms-4 text-light bg-warning border-0" onClick="return confirm('Apakah anda yakin ingin menghapus data ini...?')"><i class='bx bxs-trash'></i></a>
-                        </div>
+                        <?php if ($row_srt['tgl_ttd'] == "") { ?>
+                          <div class="d-flex order-actions">
+                            <a href="srt-klr-edit.php?id=<?= $row_srt['id_srt_klr']; ?>" class="text-light bg-success border-0"><i class='bx bxs-edit'></i></a>
+                            <a href="srt-klr-hapus.php?id=<?= $row_srt['id_srt_klr']; ?>" class="ms-4 text-light bg-warning border-0" onClick="return confirm('Apakah anda yakin ingin menghapus data ini...?')"><i class='bx bxs-trash'></i></a>
+                          </div>
+                        <?php } else { ?>
+                          <div class="d-flex order-actions">
+                            <a href="srt-klr-edit.php?id=<?= $row_srt['id_srt_klr']; ?>" class="text-light bg-secondary border-0"><i class='bx bxs-edit'></i></a>
+                            <a href="srt-klr-hapus.php?id=<?= $row_srt['id_srt_klr']; ?>" class="ms-4 text-light bg-secondary border-0"><i class='bx bxs-trash'></i></a>
+                            <a href="../phpqrcode/images/image<?= $row_srt['id_srt_klr']; ?>.png" class="text-light bg-info border-0 mx-4" target="_blank"><i class='bx bxs-barcode'></i></a>
+                          </div>
+                        <?php } ?>
+                      </td>
+                      <td>
+                        <?php if ($row_srt['tgl_ttd'] == "") { ?>
+                          <a href="srt-klr-ttd.php?id=<?= $row_srt['id_srt_klr']; ?>"><span class="badge bg-light-danger text-danger w-100">Belum Ditandatangani</span></a>
+                        <?php } else { ?>
+                          <span class="badge bg-light-success text-success w-100">Ditandatangani</span>
+                        <?php } ?>
                       </td>
                       <td><a href="../assets/files/<?= $row_srt['file'] ?>" target="_Blank"><i class="lni lni-link"></i> <?= $row_srt['no_srt'] ?></a></td>
                       <td><?= $row_srt['tgl_srt'] ?></td>
                       <td><?= $row_srt['lampiran'] ?></td>
                       <td><?= $row_srt['hal'] ?></td>
-                      <td><?= $row_srt['dari'] ?></td>
+                      <td><?= $row_srt['untuk'] ?></td>
                       <td><?= $row_srt['nm_bagian'] ?></td>
-                      <td><?= $row_srt['tgl_input'] ?></td>
                       <td><?= $row_srt['nm_user'] ?></td>
+                      <td><?= $row_srt['tgl_ttd'] ?></td>
+                      <td><?= $row_srt['tgl_input'] ?></td>
                     </tr>
                   <?php }; ?>
                 </tbody>
